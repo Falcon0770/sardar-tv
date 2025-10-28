@@ -208,7 +208,13 @@ class WordPressToS3:
                 'progress_hooks': [self.download_progress_hook],
                 'overwrites': True,  # Always overwrite existing files
                 'nopart': True,  # Don't use .part files
+                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             }
+            
+            # Use cookies if available
+            cookies_file = Path('cookies.txt')
+            if cookies_file.exists():
+                ydl_opts['cookiefile'] = str(cookies_file)
             
             print("Downloading video...")
             with YoutubeDL(ydl_opts) as ydl:

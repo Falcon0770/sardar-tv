@@ -1,40 +1,30 @@
-# Environment variables
+# Environment variables (contains AWS credentials)
 .env
 
-# Downloaded videos
-downloads/
+# YouTube cookies (contains authentication tokens)
+cookies.txt
 
-# Uploaded videos tracking
+# Uploaded videos tracking (optional - can include if you want)
 uploaded_videos.json
 
-# Python
+# Python virtual environment
+venv/
+env/
+.venv/
+
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+
+# Distribution / packaging
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
 
-# Virtual environments
-venv/
-ENV/
-env/
-
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
@@ -45,3 +35,19 @@ env/
 .DS_Store
 Thumbs.db
 
+# Logs
+*.log
+uploader.log
+uploader.error.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Test files
+test_*.py
+videos_to_upload.json
+quick_count.py
+robust_count.py
+test_api.py
