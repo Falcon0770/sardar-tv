@@ -64,6 +64,7 @@ class WordPressToS3:
     def extract_youtube_url(self, html_content):
         """
         Extract YouTube video URL from HTML content.
+        Handles various formats including malformed URLs.
         
         Args:
             html_content (str): HTML content from WordPress post
@@ -73,15 +74,15 @@ class WordPressToS3:
         """
         # Pattern 1: YouTube embed iframe
         # Example: https://www.youtube.com/embed/1ArkKtDlGOc
-        embed_pattern = r'youtube\.com/embed/([a-zA-Z0-9_-]+)'
+        embed_pattern = r'youtube\.com/embed/([a-zA-Z0-9_-]{11})'
         match = re.search(embed_pattern, html_content)
         if match:
             video_id = match.group(1)
             return f"https://www.youtube.com/watch?v={video_id}"
         
-        # Pattern 2: YouTube short URL
+        # Pattern 2: YouTube short URL (standard)
         # Example: https://youtu.be/1ArkKtDlGOc
-        short_pattern = r'youtu\.be/([a-zA-Z0-9_-]+)'
+        short_pattern = r'youtu\.be/([a-zA-Z0-9_-]{11})'
         match = re.search(short_pattern, html_content)
         if match:
             video_id = match.group(1)
@@ -89,10 +90,28 @@ class WordPressToS3:
         
         # Pattern 3: Full YouTube watch URL
         # Example: https://www.youtube.com/watch?v=1ArkKtDlGOc
-        watch_pattern = r'youtube\.com/watch\?v=([a-zA-Z0-9_-]+)'
+        watch_pattern = r'youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})'
         match = re.search(watch_pattern, html_content)
         if match:
             return f"https://www.youtube.com/watch?v={match.group(1)}"
+        
+        # Pattern 4: Malformed youtu.be with watch?v= format
+        # Example: http://youtu.be/watch?v=iDtprDhz4v8
+        malformed_short = r'youtu\.be/watch\?v=([a-zA-Z0-9_-]{11})'
+        match = re.search(malformed_short, html_content)
+        if match:
+            video_id = match.group(1)
+            return f"https://www.youtube.com/watch?v={video_id}"
+        
+        # Pattern 5: Extract any YouTube video ID (11 chars alphanumeric)
+        # This catches most edge cases
+        video_id_pattern = r'(?:youtube\.com|youtu\.be)(?:/|/watch\?v=|/embed/)([a-zA-Z0-9_-]{11})'
+        match = re.search(video_id_pattern, html_content)
+        if match:
+            video_id = match.group(1)
+            # Validate it's not a known invalid ID
+            if video_id not in ['watch', 'embed', 'https', 'http']:
+                return f"https://www.youtube.com/watch?v={video_id}"
         
         return None
     
